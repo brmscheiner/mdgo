@@ -2,11 +2,11 @@
 import React from 'react';
 import {render} from 'ink';
 import meow from 'meow';
-import App from './ui';
+import App from './App';
 
 const cli = meow(`
 	Usage
-	  $ mdrun
+	  $ mdrun <file.md>
 
 	Options
 		--name  Your name
@@ -22,4 +22,5 @@ const cli = meow(`
 	}
 });
 
-render(<App name={cli.flags.name}/>);
+render(<App input={cli.input}/>);
+// render(<App input={cli.input} name={cli.flags.name}/>);
