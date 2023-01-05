@@ -8,15 +8,33 @@ import useScreenSize from './hooks/useScreenSize';
 
 const numberStrings = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-function spawnCommand(command: string, onExit = Function.prototype) {
+/*
+TODO
+Clean up anys
+What's up with stripAnsi from https://github.com/vadimdemedes/ink/blob/master/examples/subprocess-output/subprocess-output.js
+Command line option to stay in CLI vs exit on selection (default should be to exit)
+Quit app when command finishes running 
+Handle command error
+Make selection UI sexier 
+Publish to npm 
+*/
+
+
+function spawnCommand(command: string, setCommandOutput: any) {
 	const runner = spawn(command, {
 		shell: true,
-		stdio: "inherit",
+		// stdio: "inherit",
 	});
-	runner.on("exit", function (exitCode: string) {
-		console.error("Docusaurus process exited with code: " + exitCode);
-		onExit(exitCode);
+
+	runner.stdout.on('data', (newOutput: any) => {
+		const lines = newOutput.toString('utf8').split('\n');
+		// const lines = stripAnsi(newOutput.toString('utf8')).split('\n');
+		setCommandOutput(lines.slice(-5).join('\n'));
 	});
+	// runner.on("exit", function (exitCode: string) {
+	// 	console.error("Docusaurus process exited with code: " + exitCode);
+	// 	onExit(exitCode);
+	// });
 }
 
 async function readMarkdown(filename: string, setCommandList: (cmds: string[]) => void, setError: (err: string) => void) {
@@ -62,6 +80,7 @@ const App: FC<{input?: string[]}> = (props) => {
 	const [selected, setSelected] = useState<number | null>(null);
 	const [commandList, setCommandList] = useState<string[] | null>(null);
 	const [runningCommand, setRunningCommand] = useState<string | null>(null);
+	const [runningCommandOutput, setRunningCommandOutput] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
 	const filename = props?.input?.[0];
@@ -94,7 +113,7 @@ const App: FC<{input?: string[]}> = (props) => {
 	}, [filename]);
 
 	useEffect(() => {
-		if (runningCommand) spawnCommand(runningCommand);
+		if (runningCommand) spawnCommand(runningCommand, setRunningCommandOutput);
 	}, [runningCommand]);
 
 	if (!filename) return <PrintError text="No file specified." />;
@@ -113,7 +132,10 @@ const App: FC<{input?: string[]}> = (props) => {
 				)
 			})}
 			{runningCommand && (
-				<Text>{`Running command '${runningCommand}'...`}</Text>
+				<Box flexDirection="column">
+					<Text>{`Running command '${runningCommand}'...`}</Text>
+					<Text>{runningCommandOutput}</Text>
+				</Box>
 			)}
 		</Box>
 	);

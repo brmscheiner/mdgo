@@ -33,15 +33,20 @@ const { spawn } = require("child_process");
 const PrintError_1 = __importDefault(require("./components/PrintError"));
 const useScreenSize_1 = __importDefault(require("./hooks/useScreenSize"));
 const numberStrings = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-function spawnCommand(command, onExit = Function.prototype) {
+function spawnCommand(command, setCommandOutput) {
     const runner = spawn(command, {
         shell: true,
-        stdio: "inherit",
+        // stdio: "inherit",
     });
-    runner.on("exit", function (exitCode) {
-        console.error("Docusaurus process exited with code: " + exitCode);
-        onExit(exitCode);
+    runner.stdout.on('data', (newOutput) => {
+        const lines = newOutput.toString('utf8').split('\n');
+        // const lines = stripAnsi(newOutput.toString('utf8')).split('\n');
+        setCommandOutput(lines.slice(-5).join('\n'));
     });
+    // runner.on("exit", function (exitCode: string) {
+    // 	console.error("Docusaurus process exited with code: " + exitCode);
+    // 	onExit(exitCode);
+    // });
 }
 async function readMarkdown(filename, setCommandList, setError) {
     let filehandle;
@@ -91,6 +96,7 @@ const App = (props) => {
     const [selected, setSelected] = (0, react_1.useState)(null);
     const [commandList, setCommandList] = (0, react_1.useState)(null);
     const [runningCommand, setRunningCommand] = (0, react_1.useState)(null);
+    const [runningCommandOutput, setRunningCommandOutput] = (0, react_1.useState)(null);
     const [error, setError] = (0, react_1.useState)(null);
     const filename = props?.input?.[0];
     (0, ink_1.useInput)((input, key) => {
@@ -121,7 +127,7 @@ const App = (props) => {
     }, [filename]);
     (0, react_1.useEffect)(() => {
         if (runningCommand)
-            spawnCommand(runningCommand);
+            spawnCommand(runningCommand, setRunningCommandOutput);
     }, [runningCommand]);
     if (!filename)
         return react_1.default.createElement(PrintError_1.default, { text: "No file specified." });
@@ -136,7 +142,9 @@ const App = (props) => {
             return (react_1.default.createElement(ink_1.Box, { borderColor: isSelected ? 'green' : undefined, width: width, paddingX: 1, borderStyle: "single", key: i },
                 react_1.default.createElement(ink_1.Text, null, `(${i + 1}) ${command}`)));
         }),
-        runningCommand && (react_1.default.createElement(ink_1.Text, null, `Running command '${runningCommand}'...`))));
+        runningCommand && (react_1.default.createElement(ink_1.Box, { flexDirection: "column" },
+            react_1.default.createElement(ink_1.Text, null, `Running command '${runningCommand}'...`),
+            react_1.default.createElement(ink_1.Text, null, runningCommandOutput)))));
 };
 module.exports = App;
 exports.default = App;
