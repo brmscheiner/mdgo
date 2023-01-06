@@ -1,8 +1,6 @@
-# mdgo
-
 ![mdgo logo](https://raw.githubusercontent.com/brmscheiner/mdgo/main/assets/logo.png)
 
-Parse markdown files for commands and execute them.
+Find commands in markdown files and execute them. A handy tool for those who are tired of copy-paste chaos!
 
 ## Installation
 
@@ -14,9 +12,7 @@ npm install --global mdgo
 
 Point `mdgo` to a markdown file to parse that file for commands. Use `<Tab>`, number or arrow keys to pick the command you want to run and hit `<Enter>`
 
-```sh
-mdgo README.md
-```
+![mdgo example](https://raw.githubusercontent.com/brmscheiner/mdgo/main/assets/example.gif)
 
 ### Options
 ```
