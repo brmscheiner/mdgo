@@ -1,5 +1,7 @@
 # mdgo
 
+![mdgo logo](https://github.com/brmscheiner/mdgo/tree/main/assets/logo.png)
+
 Parse markdown files for commands and execute them.
 
 ## Installation

@@ -1,6 +1,6 @@
 {
 	"name": "mdgo",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"license": "MIT",
 	"bin": "dist/cli.js",
 	"private": false,
@@ -14,7 +14,7 @@
 		"test": "xo && ava"
 	},
 	"files": [
-		"dist/cli.js"
+		"dist"
 	],
 	"dependencies": {
 		"ink": "^3.2.0",
