@@ -1,6 +1,6 @@
 # mdgo
 
-![mdgo logo](https://github.com/brmscheiner/mdgo/tree/main/assets/logo.png)
+![mdgo logo](https://raw.githubusercontent.com/brmscheiner/mdgo/main/assets/logo.png)
 
 Parse markdown files for commands and execute them.
 
