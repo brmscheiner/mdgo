@@ -18,13 +18,13 @@ Ideas:
 */
 const cli = (0, meow_1.default)(`
 	Usage
-	  $ mdrun <file.md>
+	  $ mdgo <file.md>
 
 	Options
 		--${flags.boxy}, -b  put each command in a cute lil box
 
 	Examples
-	  $ mdrun -c README.md
+	  $ mdgo -c README.md
 `, {
     flags: {
         [flags.boxy]: {

@@ -52,7 +52,7 @@ async function readMarkdown(filename: string, setCommandList: (cmds: string[]) =
 		if (cmds.length >= 1) {
 			setCommandList(cmds);
 		} else {
-			setError('No commands found. (mdrun looks for \`\`\`<code>\`\`\` blocks)')
+			setError('No commands found. (mdgo looks for \`\`\`<code>\`\`\` blocks)')
 		}
 	} catch (error: any) {
 		if (error?.code === 'ENOENT') {

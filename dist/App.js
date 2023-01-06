@@ -39,7 +39,8 @@ const numberStrings = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 /*
 TODO
 Support more than 10 commands
-Publish to npm
+Fix tests
+- there is a problem with xo: https://github.com/xojs/xo/issues/546
 */
 function spawnCommand(command) {
     const runner = spawn(command, {
@@ -74,7 +75,7 @@ async function readMarkdown(filename, setCommandList, setError) {
             setCommandList(cmds);
         }
         else {
-            setError('No commands found. (mdrun looks for \`\`\`<code>\`\`\` blocks)');
+            setError('No commands found. (mdgo looks for \`\`\`<code>\`\`\` blocks)');
         }
     }
     catch (error) {
