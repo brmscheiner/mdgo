@@ -1,5 +1,7 @@
 import { FC } from 'react';
-declare const App: FC<{
+interface AppProps {
+    compact: boolean;
     input?: string[];
-}>;
+}
+declare const App: FC<AppProps>;
 export default App;

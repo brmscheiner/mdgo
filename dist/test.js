@@ -9,10 +9,10 @@ const ava_1 = __importDefault(require("ava"));
 const ink_testing_library_1 = require("ink-testing-library");
 const App_1 = __importDefault(require("./App"));
 (0, ava_1.default)('greet unknown user', t => {
-    const { lastFrame } = (0, ink_testing_library_1.render)(react_1.default.createElement(App_1.default, null));
+    const { lastFrame } = (0, ink_testing_library_1.render)(react_1.default.createElement(App_1.default, { compact: true }));
     t.is(lastFrame(), (0, chalk_1.default) `Hello, {green Stranger}`);
 });
 (0, ava_1.default)('greet user with a name', t => {
-    const { lastFrame } = (0, ink_testing_library_1.render)(react_1.default.createElement(App_1.default, null));
+    const { lastFrame } = (0, ink_testing_library_1.render)(react_1.default.createElement(App_1.default, { compact: true }));
     t.is(lastFrame(), (0, chalk_1.default) `Hello, {green Jane}`);
 });

@@ -16,7 +16,7 @@ ok
 ```
 multi command A
 multi command B
-multi command C
+node testCommand.js
 multi command D
 ```
 

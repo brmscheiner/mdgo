@@ -9,18 +9,17 @@ const cli = meow(`
 	  $ mdrun <file.md>
 
 	Options
-		--name  Your name
+		--compact, -c  condense output
 
 	Examples
-	  $ mdrun --name=Jane
-	  Hello, Jane
+	  $ mdrun -c README.md
 `, {
 	flags: {
-		name: {
-			type: 'string'
+		compact: {
+			type: 'boolean',
+			alias: 'c',
 		}
 	}
 });
 
-render(<App input={cli.input}/>);
-// render(<App input={cli.input} name={cli.flags.name}/>);
+render(<App input={cli.input} compact={!!cli.flags['compact']}/>);
