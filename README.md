@@ -3,25 +3,15 @@
 Parse markdown files for commands and execute them.
 
 
-## Install
+## Installation
 
 ```bash
-$ npm install --global mdrun
+npm install --global mdrun
 ```
 
+## Usage
 
-## CLI
-
-```
-$ mdrun --help
-
-  Usage
-    $ mdrun
-
-  Options
-    --name  Your name
-
-  Examples
-    $ mdrun --name=Jane
-    Hello, Jane
+Point `mdrun` to a markdown file to parse that file for commands. 
+```sh
+mdrun README.md
 ```

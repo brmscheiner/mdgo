@@ -1,6 +1,6 @@
 import { FC } from 'react';
 interface AppProps {
-    compact: boolean;
+    boxy: boolean;
     input?: string[];
 }
 declare const App: FC<AppProps>;

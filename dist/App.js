@@ -32,35 +32,20 @@ const promises_1 = require("node:fs/promises");
 const { spawn } = require("child_process");
 const PrintError_1 = __importDefault(require("./components/PrintError"));
 const useScreenSize_1 = __importDefault(require("./hooks/useScreenSize"));
-const boxEmphasisColor = 'green';
+const boxEmphasisColor = 'magenta';
 const textSelectionColor = 'blueBright';
 const textEmphasisColor = 'blueBright';
 const numberStrings = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 /*
 TODO
-Clean up anys
-What's up with stripAnsi from https://github.com/vadimdemedes/ink/blob/master/examples/subprocess-output/subprocess-output.js
-Command line option to stay in CLI vs exit on selection (default should be to exit)
-Make selection UI sexier
+Support more than 10 commands
 Publish to npm
 */
-function spawnCommand(command, setCommandOutput) {
+function spawnCommand(command) {
     const runner = spawn(command, {
         shell: true,
         stdio: "inherit",
     });
-    if (false)
-        console.log(setCommandOutput);
-    // runner.stdout.on('data', (newOutput: any) => {
-    // 	console.log('newouptut has arrived!')
-    // 	const lines = newOutput.toString('utf8').split('\n');
-    // 	// const lines = stripAnsi(newOutput.toString('utf8')).split('\n');
-    // 	setCommandOutput(lines.slice(-5).join('\n'));
-    // });
-    // runner.stderr.on("data", (newOutput: any) => {
-    // 	const lines = newOutput.toString('utf8').split('\n');
-    // 	// const lines = stripAnsi(newOutput.toString('utf8')).split('\n');
-    // 	setCommandOutput(lines.slice(-5).join('\n'));	})
     runner.on("exit", () => {
         process.exit();
     });
@@ -124,24 +109,22 @@ function getNextIndex(selectedIndex, commandList) {
         return 0;
     }
 }
-const App = ({ input, compact }) => {
+const App = ({ input, boxy }) => {
     const { width = 70 } = (0, useScreenSize_1.default)();
     const [selected, setSelected] = (0, react_1.useState)(null);
     const [commandList, setCommandList] = (0, react_1.useState)(null);
     const [runningCommand, setRunningCommand] = (0, react_1.useState)(null);
-    const [runningCommandOutput, setRunningCommandOutput] = (0, react_1.useState)(null);
     const [error, setError] = (0, react_1.useState)(null);
     const filename = (input && input.length > 0) ? input?.[0] : null;
     (0, ink_1.useInput)((input, key) => {
         if (key.tab)
             setSelected(getNextIndex(selected, commandList));
-        if (key.upArrow)
+        if (key.upArrow || key.leftArrow)
             setSelected(getPreviousIndex(selected, commandList));
-        if (key.downArrow)
+        if (key.downArrow || key.rightArrow)
             setSelected(getNextIndex(selected, commandList));
-        if (numberStrings.includes(input)) {
+        if (numberStrings.includes(input))
             setSelected(parseInt(input) - 1);
-        }
         if (key.return && commandList && selected) {
             const selectedCommand = commandList?.[selected];
             setRunningCommand(selectedCommand || null);
@@ -153,7 +136,7 @@ const App = ({ input, compact }) => {
     }, [filename]);
     (0, react_1.useEffect)(() => {
         if (runningCommand)
-            spawnCommand(runningCommand, setRunningCommandOutput);
+            spawnCommand(runningCommand);
     }, [runningCommand]);
     if (!filename)
         return react_1.default.createElement(PrintError_1.default, { text: "No file specified." });
@@ -162,19 +145,16 @@ const App = ({ input, compact }) => {
     if (!commandList)
         return react_1.default.createElement(ink_1.Text, null, "Loading...");
     return (react_1.default.createElement(ink_1.Box, { flexDirection: "column" },
-        react_1.default.createElement(ink_1.Text, { color: textEmphasisColor }, `${commandList.length} commands found, use <Tab> or number keys to select a command, then hit <Enter>`),
+        react_1.default.createElement(ink_1.Text, { color: textEmphasisColor }, `${commandList.length} commands found, use <Tab>, numbers or arrow keys to select a command, then hit <Enter>`),
         commandList.map((command, i) => {
             const isSelected = i === selected;
             const label = `(${i + 1}) ${command}`;
-            if (compact)
-                return react_1.default.createElement(ink_1.Text, { key: label, color: isSelected ? textSelectionColor : undefined }, label);
-            return (react_1.default.createElement(ink_1.Box, { borderColor: isSelected ? boxEmphasisColor : undefined, width: width, paddingX: 1, borderStyle: "single", key: label },
-                react_1.default.createElement(ink_1.Text, null, label)));
+            return boxy ? (react_1.default.createElement(ink_1.Box, { borderColor: isSelected ? boxEmphasisColor : undefined, width: width, paddingX: 1, borderStyle: "single", key: label },
+                react_1.default.createElement(ink_1.Text, { color: isSelected ? textSelectionColor : undefined }, label))) : react_1.default.createElement(ink_1.Text, { key: label, color: isSelected ? textSelectionColor : undefined }, label);
         }),
         runningCommand && (react_1.default.createElement(ink_1.Box, { flexDirection: "column" },
             react_1.default.createElement(ink_1.Newline, null),
-            react_1.default.createElement(ink_1.Text, { color: textEmphasisColor }, `Running command \`${runningCommand}\``),
-            react_1.default.createElement(ink_1.Text, null, runningCommandOutput)))));
+            react_1.default.createElement(ink_1.Text, { color: textEmphasisColor }, `Running command \`${runningCommand}\``)))));
 };
 module.exports = App;
 exports.default = App;

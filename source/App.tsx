@@ -6,39 +6,24 @@ const { spawn } = require("child_process");
 import PrintError from './components/PrintError';
 import useScreenSize from './hooks/useScreenSize';
 
-const boxEmphasisColor = 'green';
+const boxEmphasisColor = 'magenta';
 const textSelectionColor = 'blueBright';
 const textEmphasisColor = 'blueBright';
 const numberStrings = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 /*
 TODO
-Clean up anys
-What's up with stripAnsi from https://github.com/vadimdemedes/ink/blob/master/examples/subprocess-output/subprocess-output.js
-Command line option to stay in CLI vs exit on selection (default should be to exit)
-Make selection UI sexier 
-Publish to npm 
+Support more than 10 commands 
+Fix tests 
+- there is a problem with xo: https://github.com/xojs/xo/issues/546
 */
 
 
-function spawnCommand(command: string, setCommandOutput: any) {
+function spawnCommand(command: string) {
 	const runner = spawn(command, {
 		shell: true,
 		stdio: "inherit",
 	});
-
-	if (false) console.log(setCommandOutput);
-	// runner.stdout.on('data', (newOutput: any) => {
-	// 	console.log('newouptut has arrived!')
-	// 	const lines = newOutput.toString('utf8').split('\n');
-	// 	// const lines = stripAnsi(newOutput.toString('utf8')).split('\n');
-	// 	setCommandOutput(lines.slice(-5).join('\n'));
-	// });
-
-	// runner.stderr.on("data", (newOutput: any) => {
-	// 	const lines = newOutput.toString('utf8').split('\n');
-	// 	// const lines = stripAnsi(newOutput.toString('utf8')).split('\n');
-	// 	setCommandOutput(lines.slice(-5).join('\n'));	})
 
 	runner.on("exit", () => {
 		process.exit();
@@ -83,10 +68,6 @@ async function readMarkdown(filename: string, setCommandList: (cmds: string[]) =
 	}
 }
 
-interface AppProps {
-	compact: boolean;
-	input?: string[];
-}
 
 function getPreviousIndex(selectedIndex: number | null, commandList: string[] | null) {
 	if (typeof selectedIndex === 'number' && commandList) {
@@ -104,20 +85,25 @@ function getNextIndex(selectedIndex: number | null, commandList: string[] | null
 	}
 }
 
-const App: FC<AppProps> = ({ input, compact }) => {
+interface AppProps {
+	boxy: boolean;
+	input?: string[];
+}
+
+
+const App: FC<AppProps> = ({ input, boxy }) => {
 	const { width = 70 } = useScreenSize();
 	const [selected, setSelected] = useState<number | null>(null);
 	const [commandList, setCommandList] = useState<string[] | null>(null);
 	const [runningCommand, setRunningCommand] = useState<string | null>(null);
-	const [runningCommandOutput, setRunningCommandOutput] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
 	const filename = (input && input.length > 0) ? input?.[0] : null;
 
 	useInput((input, key) => {
 		if (key.tab) setSelected(getNextIndex(selected, commandList));
-		if (key.upArrow) setSelected(getPreviousIndex(selected, commandList));
-		if (key.downArrow) setSelected(getNextIndex(selected, commandList));
+		if (key.upArrow || key.leftArrow) setSelected(getPreviousIndex(selected, commandList));
+		if (key.downArrow || key.rightArrow) setSelected(getNextIndex(selected, commandList));
 		if (numberStrings.includes(input)) setSelected(parseInt(input) - 1);
 
 		if (key.return && commandList && selected) {
@@ -131,7 +117,7 @@ const App: FC<AppProps> = ({ input, compact }) => {
 	}, [filename]);
 
 	useEffect(() => {
-		if (runningCommand) spawnCommand(runningCommand, setRunningCommandOutput);
+		if (runningCommand) spawnCommand(runningCommand);
 	}, [runningCommand]);
 
 	if (!filename) return <PrintError text="No file specified." />;
@@ -140,22 +126,20 @@ const App: FC<AppProps> = ({ input, compact }) => {
 
 	return (
 		<Box flexDirection="column">
-			<Text color={textEmphasisColor}>{`${commandList.length} commands found, use <Tab> or number keys to select a command, then hit <Enter>`}</Text>
+			<Text color={textEmphasisColor}>{`${commandList.length} commands found, use <Tab>, numbers or arrow keys to select a command, then hit <Enter>`}</Text>
 			{commandList.map((command, i) => {
 				const isSelected = i === selected;
 				const label = `(${i+1}) ${command}`;
-				if (compact) return <Text key={label} color={isSelected ? textSelectionColor : undefined}>{label}</Text>;
-				return (
+				return boxy ? (
 					<Box borderColor={isSelected ? boxEmphasisColor : undefined} width={width} paddingX={1} borderStyle="single" key={label}>
-						<Text>{label}</Text>
+						<Text color={isSelected ? textSelectionColor : undefined}>{label}</Text>
 					</Box>
-				)
+				) : <Text key={label} color={isSelected ? textSelectionColor : undefined}>{label}</Text>;
 			})}
 			{runningCommand && (
 				<Box flexDirection="column">
 					<Newline />
 					<Text color={textEmphasisColor}>{`Running command \`${runningCommand}\``}</Text>
-					<Text>{runningCommandOutput}</Text>
 				</Box>
 			)}
 		</Box>
