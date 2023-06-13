@@ -10,7 +10,7 @@ npm install --global mdgo
 
 ## Usage
 
-Point `mdgo` to a markdown file to parse that file for commands. Use `<Tab>`, number or arrow keys to pick the command you want to run and hit `<Enter>`
+Point `mdgo` to a markdown file to parse that file for commands. Use arrow keys, tab, or numbers to select the command you want and hit Enter to run it
 
 ![mdgo example](https://raw.githubusercontent.com/brmscheiner/mdgo/main/assets/example.gif)
 
