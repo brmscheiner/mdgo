@@ -1,6 +1,6 @@
 ![mdgo logo](https://raw.githubusercontent.com/brmscheiner/mdgo/main/assets/logo.png)
 
-Tired of opening the same file again and again just to copy and paste a command? There's a better way. MDGO parses Markdown files for commands you can execute without ever leaving the CLI.
+Tired of opening the same file again and again just to copy and paste a command? There's a better way. MDGO parses Markdown files for commands. Execute them without ever leaving the CLI.
 
 ## Installation
 
